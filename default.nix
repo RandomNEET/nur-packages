@@ -7,7 +7,9 @@
 # commands such as:
 #     nix-build -A mypackage
 
-{ pkgs ? import <nixpkgs> { } }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 {
   # The `lib`, `overlays`, `nixosModules`, `homeModules`,
@@ -19,7 +21,32 @@
   # flakeModules = { }; # flake-parts modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  example-package = pkgs.callPackage ./pkgs/example-package { };
-  # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
-  # ...
+  fcitx5-rime-ice = pkgs.callPackage ./pkgs/fcitx5-rime-ice { };
+  npmPackages = {
+    obsidian-headless = pkgs.callPackage ./pkgs/npm-packages/obsidian-headless { };
+  };
+  hyprlandPlugins = {
+    hyprspace = (pkgs.callPackage ./pkgs/hyprland-plugins { }).hyprspace;
+  };
+  obsidianPlugins = {
+    livesync = pkgs.callPackage ./pkgs/obsidian-plugins/livesync { };
+    trash-explorer = pkgs.callPackage ./pkgs/obsidian-plugins/trash-explorer { };
+  };
+  tmuxPlugins = {
+    dotbar = (pkgs.callPackage ./pkgs/tmux-plugins { }).dotbar;
+  };
+  vscode-extensions = {
+    CL.eide = pkgs.callPackage ./pkgs/vscode-extensions/CL.eide { };
+    mcu-debug = {
+      debug-tracker-vscode = pkgs.callPackage ./pkgs/vscode-extensions/mcu-debug.debug-tracker-vscode { };
+      memory-view = pkgs.callPackage ./pkgs/vscode-extensions/mcu-debug.memory-view { };
+      peripheral-viewer = pkgs.callPackage ./pkgs/vscode-extensions/mcu-debug.peripheral-viewer { };
+      rtos-views = pkgs.callPackage ./pkgs/vscode-extensions/mcu-debug.rtos-views { };
+    };
+    ms-vscode = {
+      vscode-serial-monitor =
+        pkgs.callPackage ./pkgs/vscode-extensions/ms-vscode.vscode-serial-monitor
+          { };
+    };
+  };
 }
