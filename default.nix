@@ -21,7 +21,8 @@
   # flakeModules = { }; # flake-parts modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  fcitx5-rime-ice = pkgs.callPackage ./pkgs/fcitx5-rime-ice { };
+  csakura = pkgs.callPackage ./pkgs/csakura { };
+  easycon = pkgs.callPackage ./pkgs/easycon { };
   npmPackages = {
     obsidian-headless = pkgs.callPackage ./pkgs/npm-packages/obsidian-headless { };
   };
@@ -48,5 +49,6 @@
         pkgs.callPackage ./pkgs/vscode-extensions/ms-vscode.vscode-serial-monitor
           { };
     };
+    openai.chatgpt = pkgs.callPackage ./pkgs/vscode-extensions/openai.chatgpt { };
   };
 }

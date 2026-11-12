@@ -6,7 +6,6 @@
   hyprland,
 }@topLevelArgs:
 let
-
   mkHyprlandPlugin = lib.extendMkDerivation {
     constructDrv = topLevelArgs.hyprland.stdenv.mkDerivation;
 
