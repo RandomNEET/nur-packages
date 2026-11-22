@@ -15,7 +15,7 @@ DEPS_FILE="deps.json"
 # Template body: keep identical within the same updater family.
 # Requires Bash 4.3+, curl, jq, Perl and GNU coreutils.
 # Source hashes require nix and nix-prefetch-url; NuGet also needs nix-build.
-# Usage: bash update.sh [target.nix]; relative arguments use the caller's cwd.
+# Usage: bash update.sh [--commit] [target.nix]; relative arguments use the caller's cwd.
 set -euo pipefail
 
 # Color only terminal output; NO_COLOR disables it explicitly.
@@ -41,9 +41,12 @@ require() {
 }
 require curl jq perl
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-TARGET_FILE=$(realpath -- "${1:-${NIX_FILE:-$SCRIPT_DIR/$TARGET}}")
+source "$SCRIPT_DIR/../../scripts/lib/update-common.sh"
+update_parse_args "$@"
+TARGET_FILE=$(realpath -- "${UPDATE_TARGET:-${NIX_FILE:-$SCRIPT_DIR/$TARGET}}")
 [[ -f $TARGET_FILE ]] || fail "Target file not found: $TARGET_FILE"
 TARGET_DIR=$(dirname -- "$TARGET_FILE")
+update_check_commit "$TARGET_FILE"
 UPDATE_TMP=$(mktemp -d "$TARGET_DIR/.update.XXXXXX")
 WORK_FILE=$UPDATE_TMP/default.nix
 STAGED_FILES=("$WORK_FILE")
@@ -119,6 +122,11 @@ finish() {
     log 32 "Already up to date: $TARGET_FILE"
     return
   fi
+  update_check_commit "${DESTINATIONS[@]}"
+  local old_version new_version package
+  old_version=$(field version "$TARGET_FILE")
+  new_version=$(field version "$WORK_FILE")
+  package="hyprlandPlugins.hyprspace"
   mkdir "$UPDATE_TMP/backup"
   for i in "${!DESTINATIONS[@]}"; do
     if [[ -f ${DESTINATIONS[i]} ]]; then cp -p -- "${DESTINATIONS[i]}" "$UPDATE_TMP/backup/$i"; fi
@@ -127,6 +135,7 @@ finish() {
   for i in "${!DESTINATIONS[@]}"; do mv -f -- "${STAGED_FILES[i]}" "${DESTINATIONS[i]}"; done
   COMMITTING=0
   log 32 "Updated: $TARGET_FILE"
+  update_git_commit "$package" "$old_version" "$new_version" "${DESTINATIONS[@]}"
 }
 
 require nix nix-prefetch-url

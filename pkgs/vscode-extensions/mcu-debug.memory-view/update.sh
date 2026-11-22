@@ -7,7 +7,7 @@ EXTENSION="memory-view"
 
 # Template body: keep identical within this updater family.
 # Requires Bash 4.3+, curl, jq, nix, nix-prefetch-url and GNU coreutils.
-# Usage: bash update.sh [sources.json]; relative arguments use the caller's cwd.
+# Usage: bash update.sh [--commit] [sources.json]; relative arguments use the caller's cwd.
 set -euo pipefail
 
 log() {
@@ -26,11 +26,13 @@ fail() {
 for dependency in curl jq nix nix-prefetch-url; do
   command -v "$dependency" >/dev/null || fail "Required command not found: $dependency"
 done
-(($# <= 1)) || fail "Usage: bash update.sh [sources.json]"
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-TARGET_FILE=$(realpath -- "${1:-$SCRIPT_DIR/sources.json}")
+source "$SCRIPT_DIR/../../scripts/lib/update-common.sh"
+update_parse_args "$@"
+TARGET_FILE=$(realpath -- "${UPDATE_TARGET:-$SCRIPT_DIR/sources.json}")
 [[ -f $TARGET_FILE ]] || fail "Target file not found: $TARGET_FILE"
 TARGET_DIR=$(dirname -- "$TARGET_FILE")
+update_check_commit "$TARGET_FILE"
 UPDATE_TMP=$(mktemp -d "$TARGET_DIR/.update.XXXXXX")
 WORK_FILE=$UPDATE_TMP/sources.json
 cleanup() {
@@ -106,7 +108,11 @@ jq -S . "$TARGET_FILE" >"$UPDATE_TMP/previous.json"
 if cmp -s -- "$UPDATE_TMP/sorted.json" "$UPDATE_TMP/previous.json"; then
   log 32 "Already up to date: $TARGET_FILE"
 else
+  update_check_commit "$TARGET_FILE"
+  old_version=$(update_sources_version "$TARGET_FILE")
+  new_version=$(update_sources_version "$WORK_FILE")
   chmod --reference="$TARGET_FILE" "$UPDATE_TMP/sorted.json"
   mv -f -- "$UPDATE_TMP/sorted.json" "$TARGET_FILE"
   log 32 "Updated: $TARGET_FILE"
+  update_git_commit "vscode-extensions.$PUBLISHER.$EXTENSION" "$old_version" "$new_version" "$TARGET_FILE"
 fi

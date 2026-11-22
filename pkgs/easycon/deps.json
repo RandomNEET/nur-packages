@@ -337,6 +337,12 @@
   },
   {
     "pname": "Microsoft.WindowsDesktop.App.Ref",
+    "version": "10.0.15",
+    "hash": "sha256-ZIUX1yp3K8RhviXvY3u6PGid5Cbvcfc8/0tMHNY6d6Y=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.windowsdesktop.app.ref/10.0.15/microsoft.windowsdesktop.app.ref.10.0.15.nupkg"
+  },
+  {
+    "pname": "Microsoft.WindowsDesktop.App.Ref",
     "version": "6.0.36",
     "hash": "sha256-K8l2UQgrEOJt6w3Q4Jy7dJlXAI1gG6o+2NEBgmG8dG4=",
     "url": "https://api.nuget.org/v3-flatcontainer/microsoft.windowsdesktop.app.ref/6.0.36/microsoft.windowsdesktop.app.ref.6.0.36.nupkg"
