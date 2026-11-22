@@ -1,7 +1,7 @@
 { pkgs, lib }:
 pkgs.stdenv.mkDerivation rec {
   pname = "obsidian-livesync";
-  version = "0.25.60";
+  version = "1.0.51";
   src = null;
   dontUnpack = true;
 
@@ -10,21 +10,21 @@ pkgs.stdenv.mkDerivation rec {
     cp ${
       pkgs.fetchurl {
         url = "https://github.com/vrtmrz/obsidian-livesync/releases/download/${version}/main.js";
-        sha256 = "sha256-Y9Hp7KSIKgxbuAgvz9a7ZOY6VRiAqx7+8InXyo9arhA=";
+        sha256 = "sha256-umR4LNKlocMrdhsxUw52rzYdjCnru5FodTt+7gSwTJY=";
       }
     } $out/main.js
 
     cp ${
       pkgs.fetchurl {
         url = "https://github.com/vrtmrz/obsidian-livesync/releases/download/${version}/manifest.json";
-        sha256 = "sha256-6wBBTwdSKEaw/7jH/ysF7z2l3KVkE6ph5++vgFc5nyo=";
+        sha256 = "sha256-QnUygL5UEYw89Boqjfi3+pLB/jZo+dOUPfDZ7rlGLmY=";
       }
     } $out/manifest.json
 
     cp ${
       pkgs.fetchurl {
         url = "https://github.com/vrtmrz/obsidian-livesync/releases/download/${version}/styles.css";
-        sha256 = "sha256-HWLxFH8gMZOgMGjRJCLlKx8cqiK0oIpczh5YJjpmTaM=";
+        sha256 = "sha256-aHAdyAgH8FfChJbIMR3xG1UU+iquhifpdKpaK9mlPYU=";
       }
     } $out/styles.css
   '';
